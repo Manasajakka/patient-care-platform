@@ -60,6 +60,11 @@ public class AppointmentController {
         List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
         return ResponseEntity.ok(appointments);
     }
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<?> getAppointmentsForDoctor(@PathVariable Long doctorId) {
+        List<Appointment> appointments = appointmentRepository.findByDoctorId(doctorId);
+        return ResponseEntity.ok(appointments);
+    }
     @PostMapping("/{appointmentId}/send-reminder")
     public ResponseEntity<?> sendReminder(@PathVariable Long appointmentId) {
         Optional<Appointment> appointmentOptional = appointmentRepository.findById(appointmentId);
