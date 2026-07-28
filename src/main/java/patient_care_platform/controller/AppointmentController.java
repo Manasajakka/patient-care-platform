@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import patient_care_platform.service.EmailService;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,9 @@ public class AppointmentController {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> bookAppointment(@RequestBody AppointmentRequest request) {
@@ -55,5 +59,28 @@ public class AppointmentController {
     public ResponseEntity<?> getAppointmentsForPatient(@PathVariable Long patientId) {
         List<Appointment> appointments = appointmentRepository.findByPatientId(patientId);
         return ResponseEntity.ok(appointments);
+    }
+    @PostMapping("/{appointmentId}/send-reminder")
+    public ResponseEntity<?> sendReminder(@PathVariable Long appointmentId) {
+        Optional<Appointment> appointmentOptional = appointmentRepository.findById(appointmentId);
+
+        if (appointmentOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Appointment not found");
+        }
+
+        Appointment appointment = appointmentOptional.get();
+        String patientEmail = appointment.getPatient().getUser().getEmail();
+        String patientName = appointment.getPatient().getUser().getFirstName();
+        String doctorName = appointment.getDoctor().getUser().getFirstName();
+
+        emailService.sendReminderEmail(
+                patientEmail,
+                patientName,
+                doctorName,
+                appointment.getAppointmentDate().toString(),
+                appointment.getAppointmentTime().toString()
+        );
+
+        return ResponseEntity.ok("Reminder email sent to " + patientEmail);
     }
 }
