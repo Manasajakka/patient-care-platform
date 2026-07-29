@@ -38,4 +38,9 @@ public class DoctorController {
         Doctor savedDoctor = doctorRepository.save(doctor);
         return ResponseEntity.ok(savedDoctor);
     }
+
+    @GetMapping
+    public ResponseEntity<?> getAllDoctors() {
+        return ResponseEntity.ok(doctorRepository.findAll());
+    }
 }
