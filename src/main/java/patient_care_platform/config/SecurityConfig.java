@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/doctors/**", "/api/patients/**", "/api/availability/**", "/api/appointments/**", "/api/prescriptions/**", "/api/reports/**", "/api/payments/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/doctors/**", "/api/patients/**", "/api/availability/**", "/api/appointments/**", "/api/prescriptions/**", "/api/reports/**", "/api/payments/**","/api/ai/**").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
