@@ -54,4 +54,19 @@ public class PaymentController {
             return ResponseEntity.status(500).body("Stripe error: " + e.getMessage());
         }
     }
+
+    @PostMapping("/confirm/{paymentIntentId}")
+    public ResponseEntity<?> confirmPayment(@PathVariable String paymentIntentId) {
+        Optional<Payment> paymentOptional = paymentRepository.findByStripePaymentIntentId(paymentIntentId);
+
+        if (paymentOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body("Payment not found");
+        }
+
+        Payment payment = paymentOptional.get();
+        payment.setStatus(Payment.PaymentStatus.SUCCEEDED);
+        paymentRepository.save(payment);
+
+        return ResponseEntity.ok("Payment marked as succeeded");
+    }
 }
