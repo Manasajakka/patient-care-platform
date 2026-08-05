@@ -33,6 +33,9 @@ public class Appointment {
     @Column(nullable = false)
     private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 
+    @Column(name = "reminder_sent")
+    private boolean reminderSent = false;
+
     public enum AppointmentStatus {
         SCHEDULED, CANCELLED, COMPLETED
     }
@@ -85,5 +88,12 @@ public class Appointment {
 
     public void setStatus(AppointmentStatus status) {
         this.status = status;
+    }
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
     }
 }
