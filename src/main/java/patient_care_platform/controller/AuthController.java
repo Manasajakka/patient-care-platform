@@ -2,6 +2,7 @@ package patient_care_platform.controller;
 
 import patient_care_platform.model.User;
 import patient_care_platform.model.LoginRequest;
+import patient_care_platform.model.RegisterRequest;
 import patient_care_platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,27 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final String ADMIN_SIGNUP_CODE = "CLINIC2026";
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already in use");
         }
 
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
+        if ("ADMIN".equals(request.getRole())) {
+            if (!ADMIN_SIGNUP_CODE.equals(request.getAdminCode())) {
+                return ResponseEntity.badRequest().body("Invalid admin code");
+            }
+        }
+
+        User user = new User();
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(User.Role.valueOf(request.getRole()));
 
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);

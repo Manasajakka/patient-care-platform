@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -46,5 +48,22 @@ public class ReportController {
         stats.setAppointmentsByStatus(statusCounts);
 
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/appointments-by-date-range")
+    public ResponseEntity<?> getAppointmentsByDateRange(
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        List<Appointment> appointments = appointmentRepository.findByAppointmentDateBetween(start, end);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalAppointments", appointments.size());
+        result.put("appointments", appointments);
+
+        return ResponseEntity.ok(result);
     }
 }

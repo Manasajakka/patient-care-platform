@@ -38,4 +38,27 @@ public class PatientController {
         Patient savedPatient = patientRepository.save(patient);
         return ResponseEntity.ok(savedPatient);
     }
+
+    @GetMapping
+    public ResponseEntity<?> getAllPatients() {
+        return ResponseEntity.ok(patientRepository.findAll());
+    }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<?> getPatientByUserId(@PathVariable Long userId) {
+        Optional<Patient> patientOptional = patientRepository.findByUserId(userId);
+        if (patientOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Patient profile not found");
+        }
+        return ResponseEntity.ok(patientOptional.get());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id) {
+        if (!patientRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body("Patient not found");
+        }
+        patientRepository.deleteById(id);
+        return ResponseEntity.ok("Patient deleted successfully");
+    }
 }

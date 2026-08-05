@@ -43,4 +43,22 @@ public class DoctorController {
     public ResponseEntity<?> getAllDoctors() {
         return ResponseEntity.ok(doctorRepository.findAll());
     }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<?> getDoctorByUserId(@PathVariable Long userId) {
+        Optional<Doctor> doctorOptional = doctorRepository.findByUserId(userId);
+        if (doctorOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Doctor profile not found");
+        }
+        return ResponseEntity.ok(doctorOptional.get());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long id) {
+        if (!doctorRepository.existsById(id)) {
+            return ResponseEntity.badRequest().body("Doctor not found");
+        }
+        doctorRepository.deleteById(id);
+        return ResponseEntity.ok("Doctor deleted successfully");
+    }
 }
