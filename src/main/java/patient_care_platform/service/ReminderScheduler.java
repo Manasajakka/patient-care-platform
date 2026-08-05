@@ -18,7 +18,7 @@ public class ReminderScheduler {
     @Autowired
     private EmailService emailService;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 3600000)
     public void sendUpcomingReminders() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
